@@ -4,8 +4,8 @@
 
 //Node
 
-void Node::addChildren(string& inpW, int distance) {
-    children[distance] = make_unique<Node>(inpW);
+void Node::addChildren(string& inpW, int distance, int rank) {
+    children[distance].push_back(make_unique<Node>(inpW, rank));
 }
 
 
@@ -44,25 +44,42 @@ int BKTree::LevenshteinDistance(string& s1, string& s2) {
     return dp[m][n];
 }
 
-void BKTree::insert(string& inpW) {
+void BKTree::insert(string& inpW, int rank) {
     //we assume that the string is auto set to lower case through the cli
 
     if (!root) {
-        root = make_unique<Node>(inpW);
+        root = make_unique<Node>(inpW, rank);
         treeSize++;
         return;
     }
 
     Node* curr = root.get();
-    while (curr) {
+    while (true) {
         int distance = LevenshteinDistance(curr->word, inpW);
+
         if (distance == 0) return;
+
         auto it = curr->children.find(distance);
+
+
         if (it != curr->children.end()) {
-            curr = it->second.get();
+            bool slot = false;
+            for (auto& child : it->second) {
+                int d = LevenshteinDistance(child->word, inpW);
+                if (d == 0) return;
+                curr = child.get();
+                slot = true;
+                break;
+            }
+            if (!slot) {
+                curr->addChildren(inpW, distance, rank);
+                treeSize++;
+                break;
+            }
         }
+
         else {
-            curr->addChildren(inpW, distance);
+            curr->addChildren(inpW, distance, rank);
             treeSize++;
             break;
         }
@@ -79,7 +96,10 @@ bool BKTree::contains(string& w) {
         if (distance == 0) return true;
         auto it = curr->children.find(distance);
         if (it != curr->children.end()) {
-            curr = it->second.get();
+            for (auto& child : it->second) {
+                curr = child.get();
+                break;
+            }
         }
         else {
             break;
@@ -88,10 +108,10 @@ bool BKTree::contains(string& w) {
     return false;
 }
 
-vector<string> BKTree::search(string& inpW, int maxDist) {
+vector<outputWord> BKTree::search(string& inpW, int maxDist) {
     if (!root) return {};
 
-    vector<string> res;
+    vector<outputWord> res;
     stack<Node*> process = {root.get()};
 
     while (!process.empty()) {
@@ -99,16 +119,24 @@ vector<string> BKTree::search(string& inpW, int maxDist) {
         process.pop();
         int distance = LevenshteinDistance(curr->word, inpW);
         if (distance <= maxDist) {
-            res.push_back(curr->word);
+            res.push_back(curr->word, distance, curr->rank);
         }
 
         for (int d = max(1, distance - maxDist); d <= distance + maxDist; d++) {
             auto it = curr->children.find(d);
             if (it != curr->children.end()) {
-                process.push(it->second.get());
+                for (auto& child : it->second) {
+                    process.push(child.get());
+                }
             }
         }
     }
+
+    sort(res.begin(), res.end(), [](outputWord& a, outputWord& b) {
+        if (a.distance != b.distance) return a.distance < b.distance;
+        if (a.rank != b.rank) return a.rank < b.rank;
+        return a.word < b.word;
+    });
 
     if (res.size() > 5) { //don't want too many results
         res.resize(5);
