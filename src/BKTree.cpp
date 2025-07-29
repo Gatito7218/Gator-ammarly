@@ -1,4 +1,12 @@
 #include "BKTree.h"
+#include <string>
+
+
+//Node
+
+void Node::addChildren(string& inpW, int distance) {
+    children[distance] = make_unique<Node>(inpW);
+}
 
 
 //BKTree
@@ -34,4 +42,80 @@ int BKTree::LevenshteinDistance(string& s1, string& s2) {
         }
     }
     return dp[m][n];
+}
+
+void BKTree::insert(string& inpW) {
+    //we assume that the string is auto set to lower case through the cli
+
+    if (!root) {
+        root = make_unique<Node>(inpW);
+        treeSize++;
+        return;
+    }
+
+    Node* curr = root.get();
+    while (curr) {
+        int distance = LevenshteinDistance(curr->word, inpW);
+        if (distance == 0) return;
+        auto it = curr->children.find(distance);
+        if (it != curr->children.end()) {
+            curr = it->second.get();
+        }
+        else {
+            curr->addChildren(inpW, distance);
+            treeSize++;
+            break;
+        }
+    }
+}
+
+bool BKTree::contains(string& w) {
+    //logically very similar to the insert function
+    if (!root) return false;
+
+    Node* curr = root.get();
+    while (curr) {
+        int distance = LevenshteinDistance(curr->word, w);
+        if (distance == 0) return true;
+        auto it = curr->children.find(distance);
+        if (it != curr->children.end()) {
+            curr = it->second.get();
+        }
+        else {
+            break;
+        }
+    }
+    return false;
+}
+
+vector<string> BKTree::search(string& inpW, int maxDist) {
+    if (!root) return {};
+
+    vector<string> res;
+    stack<Node*> process = {root.get()};
+
+    while (!process.empty()) {
+        Node* curr = process.top();
+        process.pop();
+        int distance = LevenshteinDistance(curr->word, inpW);
+        if (distance <= maxDist) {
+            res.push_back(curr->word);
+        }
+
+        for (int d = max(1, distance - maxDist); d <= distance + maxDist; d++) {
+            auto it = curr->children.find(d);
+            if (it != curr->children.end()) {
+                process.push(it->second.get());
+            }
+        }
+    }
+
+    if (res.size() > 5) { //don't want too many results
+        res.resize(5);
+    }
+    return res;
+}
+
+int BKTree::returnSize() {
+    return treeSize;
 }
