@@ -4,8 +4,8 @@
 
 //Node
 
-void Node::addChildren(string& inpW, int distance, int rank) {
-    children[distance].push_back(make_unique<Node>(inpW, rank));
+void BKNode::addChildren(string& inpW, int distance, int rank) {
+    children[distance].push_back(make_unique<BKNode>(inpW, rank));
 }
 
 
@@ -48,7 +48,7 @@ void BKTree::insert(string& inpW, int rank) {
     //we assume that the string is auto set to lower case through the cli
 
     if (!root) {
-        root = make_unique<Node>(inpW, rank);
+        root = make_unique<BKNode>(inpW, rank);
         treeSize++;
         return;
     }
@@ -90,7 +90,7 @@ bool BKTree::contains(string& w) {
     //logically very similar to the insert function
     if (!root) return false;
 
-    Node* curr = root.get();
+    BKNode* curr = root.get();
     while (curr) {
         int distance = LevenshteinDistance(curr->word, w);
         if (distance == 0) return true;
@@ -112,10 +112,10 @@ vector<outputWord> BKTree::search(string& inpW, int maxDist) {
     if (!root) return {};
 
     vector<outputWord> res;
-    stack<Node*> process = {root.get()};
+    stack<BKNode*> process = {root.get()};
 
     while (!process.empty()) {
-        Node* curr = process.top();
+        BKNode* curr = process.top();
         process.pop();
         int distance = LevenshteinDistance(curr->word, inpW);
         if (distance <= maxDist) {

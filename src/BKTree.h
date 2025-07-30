@@ -11,12 +11,12 @@ using namespace std;
 
 //TO-DO: multiple children of the same distance, will use a vector, I don't wanna do that right now tho
 //Also I did not account for the word rank yet, just wanted to do the basic code logic of the tree
-struct Node {
+struct BKNode {
     string word;
-    unordered_map<int, vector<unique_ptr<Node>>> children;
+    unordered_map<int, vector<unique_ptr<BKNode>>> children;
     int rank; //the file used to train has the frequency of each english language word ranked
     
-    Node(string& w, int rank) : word(w), rank(rank) {};
+    BKNode(string& w, int rank) : word(w), rank(rank) {};
     void addChildren(string& inpW, int distance, int rank);
 };
 
@@ -31,7 +31,7 @@ struct outputWord {
 
 class BKTree {
     private:
-        unique_ptr<Node> root;
+        unique_ptr<BKNode> root;
         size_t treeSize;
         int LevenshteinDistance(string& s1, string& s2); //Creates a value that quantifies the difference between 2 strings; this is the main function for dealing with word similarity
     public:
