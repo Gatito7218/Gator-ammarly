@@ -27,8 +27,8 @@ void Interface::loadBKTree(string& filename) {
 
     auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
     cout << "BKTree loaded";
-    cout << "Size: " << bkTreeImplement.returnSize();
-    cout << duration.count() << "ms";
+    cout << "Size: " << bkTreeImplement.returnSize() << endl;
+    cout << "Load length" << duration.count() << "ms" << endl;
 }
 
 void Interface::insertResultBKTree(string& word, int rank) {

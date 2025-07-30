@@ -1,11 +1,10 @@
 #include "BKTree.h"
-#include <string>
 
 
 //Node
 
 void BKNode::addChildren(string& inpW, int distance, int rank) {
-    children[distance].push_back(make_unique<BKNode>(inpW, rank));
+    children[distance].emplace_back(make_unique<BKNode>(inpW, rank));
 }
 
 
@@ -22,15 +21,15 @@ int BKTree::LevenshteinDistance(string& s1, string& s2) {
 
     vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
 
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i <= m; i++) {
         dp[i][0] = i;
     }
-    for (int j = 0; j < n; j++) {
+    for (int j = 0; j <= n; j++) {
         dp[0][j] = j;
     }
     int substitutionCost = 0;
-    for (int j = 1; j < n; j++) {
-        for (int i = 1; i < m; i++) {
+    for (int j = 1; j <= n; j++) {
+        for (int i = 1; i <= m; i++) {
             if (s1[i-1] == s2[j-1])  { //original algorithm is 1-indexed
                 substitutionCost = 0;
             }
@@ -38,7 +37,7 @@ int BKTree::LevenshteinDistance(string& s1, string& s2) {
                 substitutionCost = 1;
             }
 
-            dp[i][j] = min(dp[i-1][j] + 1, dp[i][j-1] + 1, dp[i-1][j-1] + substitutionCost);
+            dp[i][j] = min({dp[i-1][j] + 1, dp[i][j-1] + 1, dp[i-1][j-1] + substitutionCost});
         }
     }
     return dp[m][n];
@@ -53,7 +52,7 @@ void BKTree::insert(string& inpW, int rank) {
         return;
     }
 
-    Node* curr = root.get();
+    BKNode* curr = root.get();
     while (true) {
         int distance = LevenshteinDistance(curr->word, inpW);
 
@@ -112,14 +111,15 @@ vector<outputWord> BKTree::search(string& inpW, int maxDist) {
     if (!root) return {};
 
     vector<outputWord> res;
-    stack<BKNode*> process = {root.get()};
+    stack<BKNode*> process;
+    process.push(root.get());
 
     while (!process.empty()) {
         BKNode* curr = process.top();
         process.pop();
         int distance = LevenshteinDistance(curr->word, inpW);
         if (distance <= maxDist) {
-            res.push_back(curr->word, distance, curr->rank);
+            res.emplace_back(curr->word, distance, curr->rank);
         }
 
         for (int d = max(1, distance - maxDist); d <= distance + maxDist; d++) {

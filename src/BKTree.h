@@ -25,6 +25,7 @@ struct outputWord {
     string word;
     int distance;
     int rank;
+    outputWord() : word(""), distance(0), rank(0) {};
     outputWord(string& w, int d, int rank) : word(w), distance(d), rank(rank) {};
 };
 
@@ -38,7 +39,7 @@ class BKTree {
         //it really is nice and simple
         BKTree();
         ~BKTree();
-        void insert(string& w);
+        void insert(string& w, int rank);
         bool contains(string& w); //see if the word already exists within the list
         vector<outputWord> search(string& w, int maxDist);
         int returnSize();

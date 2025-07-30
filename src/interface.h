@@ -1,5 +1,7 @@
+#pragma once
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include <algorithm>
 #include <cctype>
@@ -10,11 +12,11 @@
 
 using namespace std;
 
-string lowercase(string& inpstr) {
-    string outstr;
-    std::transform(outstr.begin(), outstr.end(), outstr.begin(), ::tolower);
-    return outstr;
-};
+//string lowercase(string& inpstr) {
+//    string outstr = inpstr;
+//    std::transform(outstr.begin(), outstr.end(), outstr.begin(), ::tolower);
+//    return outstr;
+//};
 
 //Ease of use for using the autocorrect
 struct autocorResult {
@@ -23,7 +25,7 @@ struct autocorResult {
     bool requiresCorrect;
 
     autocorResult(string& w) : originalWord(w), requiresCorrect(false) {};
-}
+};
 
 
 class Interface {

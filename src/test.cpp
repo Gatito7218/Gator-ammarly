@@ -1,5 +1,4 @@
 #include "BKTree.h"
-#include "Trie.h"
 #include "interface.h"
 
 
@@ -16,12 +15,10 @@ int main() {
 
     autocorResult result = CLI.autocorrectBKTree(test, 3);
     
-    cout << "Problem word: " << result.originalWord;
-    cout << "Suggestions" << "word/rank/distance";
+    cout << "Problem word: " << result.originalWord << endl;
+    cout << "Suggestions: " << "word/rank/distance" << endl;
     auto vec = result.suggestions;
     for (int i = 0; i < vec.size(); i++) {
-        cout << vec[i].word << " " << vec[i].rank << " " << vec[i].distance;
+        cout << vec[i].word << " " << vec[i].rank << " " << vec[i].distance << endl;;
     }
-
-
 }
