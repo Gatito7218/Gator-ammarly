@@ -61,6 +61,7 @@ void Interface::basicCLI() {
     //probably don't need I'll just do everything in the test file
 }
 
+
 // Code adapted from earlier loadBKTree, credits to David Miranda
 void Interface::loadTrie(string& filename) {
     std::ifstream file(filename);
