@@ -2,6 +2,11 @@
 #include "interface.h"
 #include "Trie.h"
 
+/* This is just so i can test cus my c++ is weird.
+#include "BKTree.cpp"
+#include "interface.cpp"
+//*/
+
 int main() {
     Interface CLI;
 
@@ -19,7 +24,7 @@ int main() {
         cin >> word;
 
         autocorResult resultBK = CLI.autocorrectBKTree(word, 2);
-        vector<string> resultTrie = CLI.autocorrectTrie(word);
+        vector<pair<string, int>> resultTrie = CLI.autocorrectTrie(word);
 
 
         cout << "Problem word: " << resultBK.originalWord << endl;
@@ -31,10 +36,8 @@ int main() {
         }
 
         cout << "Trie suggestions" << endl;
-        int rnk = 1;
         for (int i = 0; i < resultTrie.size(); i++) {
-            cout << rnk << ". " << resultTrie[i] << endl;
-            rnk++;
+            cout << resultTrie[i].first << " " << resultTrie[i].second << endl;
         }
         string option;
         cout << "continue?" << endl;

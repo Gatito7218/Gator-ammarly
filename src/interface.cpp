@@ -72,14 +72,16 @@ void Interface::loadTrie(string& filename) {
     auto start = chrono::high_resolution_clock::now();
     vector<pair<string, int>> words;
     string line;
+    int rank = 1;
     while (getline(file, line) && numLoaded < 150000) {
         if (!line.empty()) {
             size_t comma = line.find(','); //csv is seperated by single comma
             if (comma != string::npos) {
                 string word = line.substr(0, comma);
-                insertResultTrie(word);
+                insertResultTrie(word, rank);
             }
         }
+        rank++;
         numLoaded++;
     }
 
@@ -92,11 +94,11 @@ void Interface::loadTrie(string& filename) {
     cout << "Load length: " << duration.count() << "ms" << endl;
 }
 
-void Interface::insertResultTrie(string& word) {
-    trieImplement.insert(word);
+void Interface::insertResultTrie(string& word, int rank) {
+    trieImplement.insert(word, rank);
 }
 
-vector<string> Interface::autocorrectTrie(string& wrd) {
+vector<pair<string, int>> Interface::autocorrectTrie(string& wrd) {
     auto start = chrono::high_resolution_clock::now();
 
     
@@ -104,11 +106,15 @@ vector<string> Interface::autocorrectTrie(string& wrd) {
     if (trieImplement.search(wrd)) {
         return {};
     }
-    vector<string> res = trieImplement.checkClose(wrd);
+    vector<pair<string, int>> res = trieImplement.checkClose(wrd);
 
 
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
     cout << "Trie Result took: " << duration.count() << "ns" << endl;
+    if (res.size() > 5) {
+        res.resize(5);
+    }
+
     return res;
 }

@@ -52,7 +52,7 @@ class Interface {
 
     //inserting into trees
     void insertResultBKTree(string& word, int rank);
-    void insertResultTrie(string& word);
+    void insertResultTrie(string& word, int rank);
 
 
     //use regex to get words from the textfile
@@ -60,7 +60,7 @@ class Interface {
 
     //TO-DO: probably better to have a function that just returns a vector of the results
     autocorResult autocorrectBKTree(string& word, int maxDist);
-    vector<string> autocorrectTrie(string& word);
+    vector<pair<string, int>> autocorrectTrie(string& word);
     
 
 

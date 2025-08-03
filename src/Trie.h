@@ -6,6 +6,7 @@
 #include <memory>
 #include <stack>
 #include <cctype>
+#include <utility>
 
 using namespace std;
 
@@ -19,12 +20,10 @@ using namespace std;
 struct TrieNode {
 
     TrieNode* alphabet[26];
-    bool wordEnd;
     int wordRank;
 
     TrieNode() {
 
-        wordEnd = false;
         wordRank = -1;
 
         for (int i = 0; i < 26; i++) {
@@ -49,7 +48,7 @@ class Trie {
 
         int count = 0;
 
-        if (node->wordEnd) {
+        if (node->wordRank > -1) {
             count++;
         }
 
@@ -77,7 +76,7 @@ class Trie {
         };  
     }
 
-    void insert(string insertWord, int rank) {
+    void insert(const string& insertWord, int rank) {
 
         // Creates new node to iterate through to get to end of word
         TrieNode* tempNode = root;
@@ -99,11 +98,10 @@ class Trie {
         }
 
         // Marks the last letter in the word to be the word end, therefore showing a valid word.
-        tempNode->wordEnd = true;
         tempNode->wordRank = rank;
     }
 
-    bool search(string searchWord) {
+    int search(const string&  searchWord) {
 
         // Creates new node to iterate through to get to end of word
         TrieNode* tempNode = root;
@@ -117,7 +115,7 @@ class Trie {
             // Checks if a node exists at the index, if not, return false.
             if (tempNode->alphabet[index] == nullptr) {
 
-                return false;
+                return -1;
             }
 
             // Moves node/letter to next letter in word.
@@ -125,11 +123,11 @@ class Trie {
         }
 
         // Returns if last letter, if exists, is the end of a word.
-        return tempNode->wordEnd;
+        return tempNode->wordRank;
     }
 
-    vector<string> checkClose(string checkWord) {
-        vector<string> closeWords;
+    vector<pair<string, int>> checkClose(const string& checkWord) {
+        vector<pair<string, int>> closeWords;
         TrieNode* tempNode = root;
 
         for (int i = checkWord.length() - 1; i >= 0; i--) {
@@ -143,12 +141,16 @@ class Trie {
 
                 for (auto word : tempWords) {
 
-                    if (search(word)) {
+                    if (search(word) > -1) {
 
-                        closeWords.push_back(word);
+                        closeWords.push_back({word, search(word)});
                     }
                 }
             }
+        
+        sort(closeWords.begin(), closeWords.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
+            return a.second < b.second;
+        });
 
         return closeWords;
     }
