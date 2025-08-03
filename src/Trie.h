@@ -135,7 +135,7 @@ class Trie {
 
                 for (char c : keys[(char) tolower(checkWord[i])]) {
 
-                    tempWords.push_back(checkWord.substr(0, i - 1) + c + checkWord.substr(i + 1));
+                    tempWords.push_back(checkWord.substr(0, i) + c + checkWord.substr(i + 1));
                 }
 
                 for (auto word : tempWords) {
