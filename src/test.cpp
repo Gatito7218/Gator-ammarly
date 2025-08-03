@@ -9,7 +9,7 @@ int main() {
 
     cout << "Basic testing" << endl;
 
-    string filename = "C:/Users/djbik/OneDrive/Desktop/Gator-ammarly/unigram_freq.csv";
+    string filename = "";
     CLI.loadBKTree(filename);
 
     bool exit = false;
