@@ -1,7 +1,9 @@
 #include "BKTree.h"
 #include "interface.h"
+#include "Trie.h"
 
-
+#include "BKTree.cpp"
+#include "interface.cpp"
 
 
 int main() {
@@ -12,6 +14,7 @@ int main() {
     string filename = "";
     string test = "datecting";
     CLI.loadBKTree(filename);
+    CLI.loadTrie(filename);
 
     autocorResult result = CLI.autocorrectBKTree(test, 3);
     
