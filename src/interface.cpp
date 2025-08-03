@@ -12,7 +12,7 @@ void Interface::loadBKTree(string& filename) {
     string line;
     int rank = 1;
     int numLoaded = 0;
-    while (getline(file, line) && numLoaded <= 300000) {
+    while (getline(file, line) && numLoaded <= 150000) {
         if (!line.empty()) {
             size_t comma = line.find(','); //csv is seperated by single comma
             if (comma != string::npos) {
@@ -53,14 +53,13 @@ autocorResult Interface::autocorrectBKTree(string& w, int maxDist) {
 
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "Result took: " << duration.count() << "ms" << endl;
+    cout << "BKTree Result took: " << duration.count() << "ms" << endl;
     return res;
 }
 
 void Interface::basicCLI() {
     //probably don't need I'll just do everything in the test file
 }
-
 
 // Code adapted from earlier loadBKTree, credits to David Miranda
 void Interface::loadTrie(string& filename) {
@@ -69,10 +68,11 @@ void Interface::loadTrie(string& filename) {
         cout << "Trie did not load properly" << endl;
     }
 
+    int numLoaded = 0;
     auto start = chrono::high_resolution_clock::now();
     vector<pair<string, int>> words;
     string line;
-    while (getline(file, line)) {
+    while (getline(file, line) && numLoaded < 150000) {
         if (!line.empty()) {
             size_t comma = line.find(','); //csv is seperated by single comma
             if (comma != string::npos) {
@@ -80,6 +80,7 @@ void Interface::loadTrie(string& filename) {
                 trieImplement.insert(word);
             }
         }
+        numLoaded++;
     }
 
     file.close();
@@ -89,4 +90,21 @@ void Interface::loadTrie(string& filename) {
     cout << "Trie loaded";
     cout << "Size: " << trieImplement.returnSize() << endl;
     cout << "Load length: " << duration.count() << "ms" << endl;
+}
+
+vector<string> Interface::autocorrectTrie(string& wrd) {
+    auto start = chrono::high_resolution_clock::now();
+
+    
+
+    if (trieImplement.search(wrd)) {
+        return {};
+    }
+    vector<string> res = trieImplement.checkClose(wrd);
+
+
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+    cout << "Trie Result took: " << duration.count() << "ns" << endl;
+    return res;
 }

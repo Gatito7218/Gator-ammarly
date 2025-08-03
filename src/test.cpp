@@ -18,13 +18,23 @@ int main() {
         cout << "Enter a word: ";
         cin >> word;
 
-        autocorResult result = CLI.autocorrectBKTree(word, 2);
+        autocorResult resultBK = CLI.autocorrectBKTree(word, 2);
+        vector<string> resultTrie = CLI.autocorrectTrie(word);
 
-        cout << "Problem word: " << result.originalWord << endl;
+
+        cout << "Problem word: " << resultBK.originalWord << endl;
+        cout << "BKTree suggestions" << endl;
         cout << "Suggestions: " << "word/rank/distance" << endl;
-        auto vec = result.suggestions;
+        auto vec = resultBK.suggestions;
         for (int i = 0; i < vec.size(); i++) {
             cout << vec[i].word << " " << vec[i].rank << " " << vec[i].distance << endl;
+        }
+
+        cout << "Trie suggestions" << endl;
+        int rnk = 1;
+        for (int i = 0; i < resultTrie.size(); i++) {
+            cout << rnk << ". " << resultTrie[i] << endl;
+            rnk++;
         }
         string option;
         cout << "continue?" << endl;

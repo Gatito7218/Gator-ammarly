@@ -25,7 +25,7 @@ struct outputWord {
     string word;
     int distance;
     int rank;
-    outputWord() : word(""), distance(0), rank(0) {};
+    outputWord() : word(""), distance(0), rank(0) {}; //transform for vector requires default construct
     outputWord(string& w, int d, int rank) : word(w), distance(d), rank(rank) {};
 };
 
