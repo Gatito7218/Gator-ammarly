@@ -1,8 +1,6 @@
 #include "BKTree.h"
 #include "interface.h"
-
-
-
+#include "Trie.h"
 
 int main() {
     Interface CLI;
@@ -11,6 +9,7 @@ int main() {
 
     string filename = "";
     CLI.loadBKTree(filename);
+    CLI.loadTrie(filename);
 
     bool exit = false;
 
