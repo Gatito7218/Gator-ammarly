@@ -2,10 +2,6 @@
 #include "interface.h"
 #include "Trie.h"
 
-#include "BKTree.cpp"
-#include "interface.cpp"
-
-
 int main() {
     Interface CLI;
 
