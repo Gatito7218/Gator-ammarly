@@ -11,7 +11,8 @@ void Interface::loadBKTree(string& filename) {
     vector<pair<string, int>> words;
     string line;
     int rank = 1;
-    while (getline(file, line)) {
+    int numLoaded = 0;
+    while (getline(file, line) && numLoaded <= 300000) {
         if (!line.empty()) {
             size_t comma = line.find(','); //csv is seperated by single comma
             if (comma != string::npos) {
@@ -19,6 +20,7 @@ void Interface::loadBKTree(string& filename) {
                 insertResultBKTree(word, rank);
             }
             rank++;
+            numLoaded++;
         }
     }
 
@@ -28,7 +30,7 @@ void Interface::loadBKTree(string& filename) {
     auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
     cout << "BKTree loaded";
     cout << "Size: " << bkTreeImplement.returnSize() << endl;
-    cout << "Load length" << duration.count() << "ms" << endl;
+    cout << "Load time: " << duration.count() << "ms" << endl;
 }
 
 void Interface::insertResultBKTree(string& word, int rank) {
