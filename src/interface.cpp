@@ -11,7 +11,8 @@ void Interface::loadBKTree(string& filename) {
     vector<pair<string, int>> words;
     string line;
     int rank = 1;
-    while (getline(file, line)) {
+    int numLoaded = 0;
+    while (getline(file, line) && numLoaded <= 150000) {
         if (!line.empty()) {
             size_t comma = line.find(','); //csv is seperated by single comma
             if (comma != string::npos) {
@@ -19,6 +20,7 @@ void Interface::loadBKTree(string& filename) {
                 insertResultBKTree(word, rank);
             }
             rank++;
+            numLoaded++;
         }
     }
 
@@ -28,7 +30,7 @@ void Interface::loadBKTree(string& filename) {
     auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
     cout << "BKTree loaded";
     cout << "Size: " << bkTreeImplement.returnSize() << endl;
-    cout << "Load length: " << duration.count() << "ms" << endl;
+    cout << "Load time: " << duration.count() << "ms" << endl;
 }
 
 void Interface::insertResultBKTree(string& word, int rank) {
@@ -51,14 +53,13 @@ autocorResult Interface::autocorrectBKTree(string& w, int maxDist) {
 
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "Result took: " << duration.count() << "ms" << endl;
+    cout << "BKTree Result took: " << duration.count() << "ms" << endl;
     return res;
 }
 
 void Interface::basicCLI() {
     //probably don't need I'll just do everything in the test file
 }
-
 
 // Code adapted from earlier loadBKTree, credits to David Miranda
 void Interface::loadTrie(string& filename) {
@@ -67,10 +68,11 @@ void Interface::loadTrie(string& filename) {
         cout << "Trie did not load properly" << endl;
     }
 
+    int numLoaded = 0;
     auto start = chrono::high_resolution_clock::now();
     vector<pair<string, int>> words;
     string line;
-    while (getline(file, line)) {
+    while (getline(file, line) && numLoaded < 150000) {
         if (!line.empty()) {
             size_t comma = line.find(','); //csv is seperated by single comma
             if (comma != string::npos) {
@@ -78,6 +80,7 @@ void Interface::loadTrie(string& filename) {
                 insertResultTrie(word);
             }
         }
+        numLoaded++;
     }
 
     file.close();
@@ -91,4 +94,21 @@ void Interface::loadTrie(string& filename) {
 
 void Interface::insertResultTrie(string& word) {
     trieImplement.insert(word);
+}
+
+vector<string> Interface::autocorrectTrie(string& wrd) {
+    auto start = chrono::high_resolution_clock::now();
+
+    
+
+    if (trieImplement.search(wrd)) {
+        return {};
+    }
+    vector<string> res = trieImplement.checkClose(wrd);
+
+
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+    cout << "Trie Result took: " << duration.count() << "ns" << endl;
+    return res;
 }

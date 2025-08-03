@@ -60,7 +60,7 @@ class Interface {
 
     //TO-DO: probably better to have a function that just returns a vector of the results
     autocorResult autocorrectBKTree(string& word, int maxDist);
-    autocorResult autocorrectTrie(string& word);
+    vector<string> autocorrectTrie(string& word);
     
 
 

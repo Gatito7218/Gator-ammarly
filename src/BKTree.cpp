@@ -114,7 +114,7 @@ vector<outputWord> BKTree::search(string& inpW, int maxDist) {
     stack<BKNode*> process;
     process.push(root.get());
 
-    while (!process.empty()) {
+    while (!process.empty()) { //cap the number of suggestions
         BKNode* curr = process.top();
         process.pop();
         int distance = LevenshteinDistance(curr->word, inpW);
@@ -133,14 +133,15 @@ vector<outputWord> BKTree::search(string& inpW, int maxDist) {
     }
 
     sort(res.begin(), res.end(), [](outputWord& a, outputWord& b) {
-        if (a.distance != b.distance) return a.distance < b.distance;
-        if (a.rank != b.rank) return a.rank < b.rank;
+        if (a.distance != b.distance) return a.distance < b.distance; 
+        if (a.rank != b.rank) return a.rank < b.rank; //if 2 words have the same distance use rank
         return a.word < b.word;
     });
 
-    if (res.size() > 5) { //don't want too many results
+    if (res.size() > 5) {
         res.resize(5);
     }
+
     return res;
 }
 
