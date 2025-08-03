@@ -20,10 +20,12 @@ struct TrieNode {
 
     TrieNode* alphabet[26];
     bool wordEnd;
+    int wordRank;
 
     TrieNode() {
 
         wordEnd = false;
+        wordRank = -1;
 
         for (int i = 0; i < 26; i++) {
 
@@ -75,7 +77,7 @@ class Trie {
         };  
     }
 
-    void insert(string insertWord) {
+    void insert(string insertWord, int rank) {
 
         // Creates new node to iterate through to get to end of word
         TrieNode* tempNode = root;
@@ -98,6 +100,7 @@ class Trie {
 
         // Marks the last letter in the word to be the word end, therefore showing a valid word.
         tempNode->wordEnd = true;
+        tempNode->wordRank = rank;
     }
 
     bool search(string searchWord) {
@@ -143,11 +146,6 @@ class Trie {
                     if (search(word)) {
 
                         closeWords.push_back(word);
-
-                        if (closeWords.size() >= 3) {
-
-                            return closeWords;
-                        }
                     }
                 }
             }

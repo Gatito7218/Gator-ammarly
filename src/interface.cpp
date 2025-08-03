@@ -75,7 +75,7 @@ void Interface::loadTrie(string& filename) {
             size_t comma = line.find(','); //csv is seperated by single comma
             if (comma != string::npos) {
                 string word = line.substr(0, comma);
-                trieImplement.insert(word);
+                insertResultTrie(word);
             }
         }
     }
@@ -87,4 +87,8 @@ void Interface::loadTrie(string& filename) {
     cout << "Trie loaded";
     cout << "Size: " << trieImplement.returnSize() << endl;
     cout << "Load length: " << duration.count() << "ms" << endl;
+}
+
+void Interface::insertResultTrie(string& word) {
+    trieImplement.insert(word);
 }
