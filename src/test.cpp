@@ -3,7 +3,7 @@
 #include "Trie.h"
 #include "ui.cpp"
 
-/* This is just so i can test cus my c++ is weird.
+///* This is just so i can test cus my c++ is weird.
 #include "BKTree.cpp"
 #include "interface.cpp"
 //*/
@@ -160,7 +160,7 @@ int main() {
                     }
                 }
 
-                cout << "Enter replacement number or 'ignore': ";
+                cout << "Enter replacement letter/number (e.g. t1 or b4) or 'ignore': ";
                 string input;
                 getline(cin, input);
 
