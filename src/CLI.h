@@ -8,7 +8,7 @@
 class CLI {
     private:
         Interface interface;
-        string dataFile = "C:/Users/GDGam/OneDrive/Desktop/files/programming/Work for c++/datastruct work/gatorammarly/Gator-ammarly/unigram_freq.csv";
+        string dataFile = "C:/Users/djbik/OneDrive/Desktop/Gator-ammarly/Gator-ammarly/unigram_freq.csv";
         bool alrLoaded = false; //if the data is already loaded into the trees (so it doesn't do it again)
         void printHeader() {
             cout << "========================================" << endl;
@@ -34,19 +34,26 @@ class CLI {
             string data;
 
             cout << "Enter the filepath: ";
-            cin.ignore();
-            getline(cin, data);
-            if (data.empty()) {
+            
+            cin >> data;
+            if (data == "default") {
                 cout << "Using default" << endl;
                 data = dataFile;
             }
             //calling these functions will return the load time of the trees
-            interface.loadBKTree(data);
-            interface.loadTrie(data);
+            bool bkLoaded = interface.loadBKTree(data);
+            bool trieLoaded = interface.loadTrie(data);
 
-            alrLoaded = true;
+            if (bkLoaded && trieLoaded) {
+                alrLoaded = true;
+                cout << "Trees Loaded!" << endl;
+            }
+            else {
+                cout << "Error in tree loading" << endl;
+            }
 
-            cout << "Trees loaded! Press enter to continue" << endl;
+            cout << "Press enter to continue" << endl;
+            cin.ignore();
             cin.get();
         }
 
@@ -54,6 +61,7 @@ class CLI {
             if (!alrLoaded) {
                 cout << "Please load the trees first!" << endl;
                 cout << "Press enter to continue" << endl;
+                cin.ignore();
                 cin.get();
                 return;
             }
@@ -113,7 +121,8 @@ class CLI {
 
             cout << "Enter file path to check: ";
             string filename;
-            cin >> filename;
+            cin.ignore();
+            getline(cin, filename);
 
             if (filename.empty()) {
                 cout << "No file typed in erm" << endl;
@@ -138,10 +147,13 @@ class CLI {
                 tokenizedLines.push_back(tokenize(line));
             }
             file.close();
+            
             //see if a line has errors
             for (int i = 0; i < tokenizedLines.size(); i++) {
                 auto& tokens = tokenizedLines[i];
-                bool containsError = false;
+                bool hasError = false;
+
+                cout << "Line " << (i + 1) << ": ";
 
                 for (int j = 0; j < tokens.size(); j++) {
                     string& word = tokens[j].first;
@@ -151,17 +163,24 @@ class CLI {
                     if (isWord) {
                         string firstClean = removeSymbols(word);
                         string cleanWord = lowercase(firstClean);
-                        
-                        isCorrect = interface.searchWordBKTree(cleanWord) || interface.searchWordTrie(cleanWord);
-                        if (!isCorrect) containsError = true;
+
+                        if (!cleanWord.empty()) {
+                            isCorrect = interface.searchWordBKTree(cleanWord) || interface.searchWordTrie(cleanWord);
+                            if (!isCorrect) hasError = true;
+                        }
                     }
 
                     cout << (isCorrect ? word : underline(word));
-
                 }
                 cout << endl;
 
-                if (!containsError) continue;
+                if (!hasError) {
+                    cout << "No errors on this line" << endl;
+                    continue;
+                }
+
+                cout << "Processing misspelled words:" << endl;
+                
                 //process misspelled words
                 for (int j = 0; j < tokens.size(); j++) {
                     if (!tokens[j].second) continue;
@@ -169,28 +188,33 @@ class CLI {
                     string firstClean = removeSymbols(tokens[j].first);
                     string cleanWord = lowercase(firstClean);
 
-                    if (interface.searchWordTrie(cleanWord) || interface.searchWordBKTree(cleanWord)) {
-                        continue;
-                    }
+                    if (cleanWord.empty()) continue;
 
-                    cout << "Misspelled word: " << tokens[j].first << endl;
+                    cout << "\nMisspelled word: " << tokens[j].first << endl;
 
                     autocorResult resultBK = interface.autocorrectBKTree(cleanWord, 2); //don't want more than a distance of 2
                     vector<pair<string, int>> resultTrie = interface.autocorrectTrie(cleanWord);
 
+                    bool sugg = false;
                     if (!resultBK.suggestions.empty()) {
                         cout << "BK-Tree suggestions: word/rank/distance" << endl;
                         auto vec = resultBK.suggestions;
                         for (int k = 0; k < vec.size(); k++) {
                             cout << " b" << (k + 1) << ". " << vec[k].word << " " << vec[k].distance << " " << vec[k].rank << endl;
                         }
+                        sugg = true;
                     }
                     if (!resultTrie.empty()) {
                         cout << "Trie suggestions: " << endl;
-                        auto vec = resultBK.suggestions;
-                        for (int k = 0; k < vec.size(); k++) {
+                        for (int k = 0; k < resultTrie.size(); k++) {
                             cout << " t" << (k + 1) << ". " << resultTrie[k].first << " "<< resultTrie[k].second << endl;
                         }
+                        sugg = true;
+                    }
+
+                    if (!sugg) {
+                        cout << "No suggestion found." << endl;
+                        continue;
                     }
 
                     cout << "Enter replacement letter/number (e.g. t1 or b4) or 'ignore': ";
@@ -223,12 +247,16 @@ class CLI {
                             cout << "Invalid input, skipping." << endl;
                     }
                 }
+
+                tokenizedLines[i] = tokens;
                 cout << "\nContinue to next line? (y/n): ";
                 string answer;
                 cin >> answer;
                 if (answer != "y" && answer != "Y") break;
             }
 
+            
+            //saving the correct file
             string correctedFile = filename.substr(0, filename.find_last_of('.')) + "_corrected.txt";
             ofstream newFile(correctedFile);
 
@@ -247,6 +275,7 @@ class CLI {
             }
 
             cout << "Press Enter to continue";
+            cin.ignore();
             cin.get();
         }
 
@@ -262,6 +291,7 @@ class CLI {
                 printMenu();
 
                 if (!(cin >> choice)) {
+                    cin.clear();
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Invalid input, please enter a numeric value." << endl;
                     cout << "Press enter to continue." << endl;
@@ -286,6 +316,7 @@ class CLI {
                     default:
                         cout << "Invalid input, please use a number from 1-4" << endl;
                         cout << "Press enter to continue." << endl;
+                        cin.ignore();
                         cin.get();
                 }
             }

@@ -39,8 +39,8 @@ class Interface {
     //inserting the common word data set into the trees
     //CSV file 2 columns, 1st is word, 2nd is frequency; its already sorted so disregard frequency and attach rank based on order
     //seperated by comma
-    void loadBKTree(string& filename);
-    void loadTrie(string& filename);
+    bool loadBKTree(string& filename);
+    bool loadTrie(string& filename);
 
     //inserting into trees
     void insertResultBKTree(string& word, int rank);
