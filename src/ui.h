@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -7,14 +6,20 @@
 #include <vector>
 #include <regex>
 #include <cctype>
+#include <algorithm>
 
 using namespace std;
 
 struct wrongWord {
-
     int lineIndex;
     int tokenIndex;
     string ogWord;
+};
+
+string lowercase(constr string& word) {
+    string outpt = word;
+    transform(outpt.begin(), output.end(), ::tolower);
+    return outpt;
 };
 
 string underline(const string& word) {
@@ -22,7 +27,7 @@ string underline(const string& word) {
     //cout << "\033[1;31m" << "\033[4m" << "This text will be underlined." << "\033[24m" << "\033[0m" << endl; 
 
     return ("\033[1;31m\033[4m" + word + "\033[24m\033[0m");
-}
+};
 
 string removeSymbols(const string& word) {
     
@@ -36,7 +41,7 @@ string removeSymbols(const string& word) {
     }
 
     return result;
-}
+};
 
 vector<pair<string, bool>> tokenize(const string& line) {
 
@@ -54,4 +59,4 @@ vector<pair<string, bool>> tokenize(const string& line) {
 
     return tokens;
 
-}
+};
