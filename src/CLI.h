@@ -8,7 +8,7 @@
 class CLI {
     private:
         Interface interface;
-        string dataFile = "";
+        string dataFile = "C:/Users/djbik/OneDrive/Desktop/Gator-ammarly/Gator-ammarly/unigram_freq.csv";
         bool alrLoaded = false; //if the data is already loaded into the trees (so it doesn't do it again)
         void printHeader() {
             cout << "========================================" << endl;
@@ -34,7 +34,7 @@ class CLI {
             string data;
 
             cout << "Enter the filepath: ";
-            getline(cin, data);
+            cin >> data;
             if (data.empty()) {
                 cout << "Using default" << endl;
                 data = dataFile;
@@ -62,7 +62,7 @@ class CLI {
             string word;
             while (true) {
                 cout << "Enter word (type 123 to go back to menu): " << endl;
-                getline(cin, word);
+                cin >> word;
 
                 if (word == "123") break;
                 if (word.empty()) continue;
@@ -112,7 +112,7 @@ class CLI {
 
             cout << "Enter file path to check: ";
             string filename;
-            getline(cin, filename);
+            cin >> filename;
 
             if (filename.empty()) {
                 cout << "No file typed in erm" << endl;
@@ -194,7 +194,7 @@ class CLI {
 
                     cout << "Enter replacement letter/number (e.g. t1 or b4) or 'ignore': ";
                     string input;
-                    getline(cin, input);
+                    cin >> input;
 
                     if (input == "ignore") {
                         continue;
@@ -224,7 +224,7 @@ class CLI {
                 }
                 cout << "\nContinue to next line? (y/n): ";
                 string answer;
-                getline(cin, answer);
+                cin >> answer;
                 if (answer != "y" && answer != "Y") break;
             }
 
