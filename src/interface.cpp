@@ -113,9 +113,6 @@ vector<pair<string, int>> Interface::autocorrectTrie(string& wrd) {
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
     cout << "Trie Result took: " << duration.count() << "ns" << endl;
-    if (res.size() > 5) {
-        res.resize(5);
-    }
 
     return res;
 }

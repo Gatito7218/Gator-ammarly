@@ -7,6 +7,7 @@
 #include <stack>
 #include <cctype>
 #include <utility>
+#include <unordered_set>
 
 using namespace std;
 
@@ -21,10 +22,12 @@ struct TrieNode {
 
     TrieNode* alphabet[26];
     int wordRank;
+    bool wordEnd;
 
     TrieNode() {
 
         wordRank = -1;
+        wordEnd = false;
 
         for (int i = 0; i < 26; i++) {
 
@@ -48,7 +51,7 @@ class Trie {
 
         int count = 0;
 
-        if (node->wordRank > -1) {
+        if (node->wordEnd) {
             count++;
         }
 
@@ -57,6 +60,18 @@ class Trie {
         }
 
         return count;
+    }
+
+    int getRank(const string& word) {
+        TrieNode* tempNode = root;
+        for (char c : word) {
+            int idx = (char) tolower(c) - 'a';
+            if (tempNode->alphabet[idx] == nullptr) {
+                return -1;
+            }
+            tempNode = tempNode->alphabet[idx];
+        }
+        return tempNode->wordEnd ? tempNode->wordRank : -1;
     }
 
     public:
@@ -98,10 +113,11 @@ class Trie {
         }
 
         // Marks the last letter in the word to be the word end, therefore showing a valid word.
+        tempNode->wordEnd = true;
         tempNode->wordRank = rank;
     }
 
-    int search(const string&  searchWord) {
+    bool search(const string&  searchWord) {
 
         // Creates new node to iterate through to get to end of word
         TrieNode* tempNode = root;
@@ -115,7 +131,7 @@ class Trie {
             // Checks if a node exists at the index, if not, return false.
             if (tempNode->alphabet[index] == nullptr) {
 
-                return -1;
+                return false;
             }
 
             // Moves node/letter to next letter in word.
@@ -123,34 +139,41 @@ class Trie {
         }
 
         // Returns if last letter, if exists, is the end of a word.
-        return tempNode->wordRank;
+        return tempNode->wordEnd;
     }
 
     vector<pair<string, int>> checkClose(const string& checkWord) {
         vector<pair<string, int>> closeWords;
+        unordered_set<string> seen;
         TrieNode* tempNode = root;
 
         for (int i = checkWord.length() - 1; i >= 0; i--) {
 
-            vector<string> tempWords;
+                char orig = tolower(checkWord[i]);
+                if (keys.find(orig) == keys.end()) continue;
 
-                for (char c : keys[(char) tolower(checkWord[i])]) {
-
-                    tempWords.push_back(checkWord.substr(0, i) + c + checkWord.substr(i + 1));
-                }
-
-                for (auto word : tempWords) {
-
-                    if (search(word) > -1) {
-
-                        closeWords.push_back({word, search(word)});
+                for (char c : keys[orig]) {
+                    string cand = checkWord;
+                    cand[i] = c;
+                    if (seen.count(cand)) continue;
+                    seen.insert(cand);
+                    if (search(cand)) {
+                        int rank = getRank(cand);
+                        closeWords.emplace_back(cand, rank);
                     }
                 }
             }
         
         sort(closeWords.begin(), closeWords.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
+            if (a.second == -1 && b.second == -1) return a.first < b.first;
+            if (a.second == -1) return false;
+            if (b.second == -1) return true;
             return a.second < b.second;
         });
+
+        if (closeWords.size() > 5) {
+            closeWords.resize(5);
+        }
 
         return closeWords;
     }

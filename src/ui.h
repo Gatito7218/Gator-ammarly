@@ -16,9 +16,9 @@ struct wrongWord {
     string ogWord;
 };
 
-string lowercase(constr string& word) {
+string lowercase(const string& word) {
     string outpt = word;
-    transform(outpt.begin(), output.end(), ::tolower);
+    transform(outpt.begin(), outpt.end(), outpt.begin(), ::tolower);
     return outpt;
 };
 

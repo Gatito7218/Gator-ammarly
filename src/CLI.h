@@ -3,11 +3,12 @@
 #include "ui.h"
 #include "interface.h"
 #include <iostream>
+#include <limits>
 
 class CLI {
     private:
         Interface interface;
-        string dataFile = "C:/Users/djbik/OneDrive/Desktop/Gator-ammarly/Gator-ammarly/unigram_freq.csv";
+        string dataFile = "";
         bool alrLoaded = false; //if the data is already loaded into the trees (so it doesn't do it again)
         void printHeader() {
             cout << "========================================" << endl;
@@ -34,11 +35,11 @@ class CLI {
 
             cout << "Enter the filepath: ";
             getline(cin, data);
-            if (dataFile2.empty()) {
+            if (data.empty()) {
                 cout << "Using default" << endl;
                 data = dataFile;
             }
-
+            //calling these functions will return the load time of the trees
             interface.loadBKTree(data);
             interface.loadTrie(data);
 
@@ -93,7 +94,7 @@ class CLI {
                 if (!resultTrie.empty()) {
                     cout << "Trie suggestions: ";
                     for (int i = 0; i < resultTrie.size(); i++) {
-                        cout << " " << (i + 1) << ". " << resultTrie[i].first << "rank: " << resultTrie[i].second << endl;
+                        cout << " " << (i + 1) << ". " << resultTrie[i].first << " rank: " << resultTrie[i].second << endl;
                     }
                 }
                 else { cout << "No suggestions found for Trie" << endl;};
@@ -109,7 +110,143 @@ class CLI {
                 return;
             }
 
-            
+            cout << "Enter file path to check: ";
+            string filename;
+            getline(cin, filename);
+
+            if (filename.empty()) {
+                cout << "No file typed in erm" << endl;
+                cout << "Press enter to continue" << endl;
+                cin.get();
+                return;
+            }
+
+            ifstream file(filename);
+            if (!file.is_open()) {
+                cout << "Error: File could not open" << endl;
+                cout << "Press enter to continue" << endl;
+                cin.get();
+                return;
+            }
+
+            vector<vector<pair<string, bool>>> tokenizedLines;
+            string line;
+
+            cout << "Reading file..." << endl;
+            while (getline(file, line)) {
+                tokenizedLines.push_back(tokenize(line));
+            }
+            file.close();
+            //see if a line has errors
+            for (int i = 0; i < tokenizedLines.size(); i++) {
+                auto& tokens = tokenizedLines[i];
+                bool containsError = false;
+
+                for (int j = 0; j < tokens.size(); j++) {
+                    string& word = tokens[j].first;
+                    bool isWord = tokens[j].second;
+
+                    bool isCorrect = true;
+                    if (isWord) {
+                        string firstClean = removeSymbols(word);
+                        string cleanWord = lowercase(firstClean);
+                        
+                        isCorrect = interface.searchWordBKTree(cleanWord) || interface.searchWordTrie(cleanWord);
+                        if (!isCorrect) containsError = true;
+                    }
+
+                    cout << (isCorrect ? word : underline(word));
+
+                }
+                cout << endl;
+
+                if (!containsError) continue;
+                //process misspelled words
+                for (int j = 0; j < tokens.size(); j++) {
+                    if (!tokens[j].second) continue;
+
+                    string firstClean = removeSymbols(tokens[j].first);
+                    string cleanWord = lowercase(firstClean);
+
+                    if (interface.searchWordTrie(cleanWord) || interface.searchWordBKTree(cleanWord)) {
+                        continue;
+                    }
+
+                    cout << "Misspelled word: " << tokens[j].first << endl;
+
+                    autocorResult resultBK = interface.autocorrectBKTree(cleanWord, 2); //don't want more than a distance of 2
+                    vector<pair<string, int>> resultTrie = interface.autocorrectTrie(cleanWord);
+
+                    if (!resultBK.suggestions.empty()) {
+                        cout << "BK-Tree suggestions: word/rank/distance" << endl;
+                        auto vec = resultBK.suggestions;
+                        for (int k = 0; k < vec.size(); k++) {
+                            cout << " b" << (k + 1) << ". " << vec[k].word << " " << vec[k].distance << " " << vec[k].rank << endl;
+                        }
+                    }
+                    if (!resultTrie.empty()) {
+                        cout << "Trie suggestions: " << endl;
+                        auto vec = resultBK.suggestions;
+                        for (int k = 0; k < vec.size(); k++) {
+                            cout << " t" << (k + 1) << ". " << resultTrie[k].first << " "<< resultTrie[k].second << endl;
+                        }
+                    }
+
+                    cout << "Enter replacement letter/number (e.g. t1 or b4) or 'ignore': ";
+                    string input;
+                    getline(cin, input);
+
+                    if (input == "ignore") {
+                        continue;
+                    } else if (input.size() == 2 && isdigit(input[1])) {
+
+                        int numChoice = input[1] - '1';
+
+                        if (input[0] == 't' && numChoice >= 0 && numChoice < resultTrie.size()) {
+
+                                cout << "Changed " << tokens[j].first << " into " << resultTrie[numChoice].first << endl;
+                                tokens[j].first = resultTrie[numChoice].first;
+                        
+                        } else if (input[0] == 'b' && numChoice >= 0 && numChoice < resultBK.suggestions.size()) {
+
+                                cout << "Changed " << tokens[j].first << " into " << resultBK.suggestions[numChoice].word << endl;
+                                tokens[j].first = resultBK.suggestions[numChoice].word;
+
+                        } else {
+
+                                cout << "Invalid input, skipping." << endl;
+                            }
+
+                    } else {
+
+                            cout << "Invalid input, skipping." << endl;
+                    }
+                }
+                cout << "\nContinue to next line? (y/n): ";
+                string answer;
+                getline(cin, answer);
+                if (answer != "y" && answer != "Y") break;
+            }
+
+            string correctedFile = filename.substr(0, filename.find_last_of('.')) + "_corrected.txt";
+            ofstream newFile(correctedFile);
+
+            if (newFile.is_open()) {
+                for (const auto& line : tokenizedLines) {
+                    for (const auto& [token, isWord] : line) {
+                        newFile << token;
+                    }
+                    newFile << '\n';
+                }
+                newFile.close();
+                cout << "\nCorrected file saves as: " << correctedFile << endl;
+            }
+            else {
+                cout << "Error: Could not create corrected file." << endl;
+            }
+
+            cout << "Press Enter to continue";
+            cin.get();
         }
 
 
@@ -124,6 +261,7 @@ class CLI {
                 printMenu();
 
                 if (!(cin >> choice)) {
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Invalid input, please enter a numeric value." << endl;
                     cout << "Press enter to continue." << endl;
                     cin.get();
@@ -139,7 +277,8 @@ class CLI {
                         checkIndividualWrd();
                         break;
                     case 3:
-
+                        checkTextFile();
+                        break;
                     case 4:
                         cout << "Bye Bye!" << endl;
                         return;
