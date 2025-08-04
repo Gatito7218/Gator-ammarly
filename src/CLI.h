@@ -8,7 +8,7 @@
 class CLI {
     private:
         Interface interface;
-        string dataFile = "C:/Users/djbik/OneDrive/Desktop/Gator-ammarly/Gator-ammarly/unigram_freq.csv";
+        string dataFile = "C:/Users/GDGam/OneDrive/Desktop/files/programming/Work for c++/datastruct work/gatorammarly/Gator-ammarly/unigram_freq.csv";
         bool alrLoaded = false; //if the data is already loaded into the trees (so it doesn't do it again)
         void printHeader() {
             cout << "========================================" << endl;
@@ -34,7 +34,8 @@ class CLI {
             string data;
 
             cout << "Enter the filepath: ";
-            cin >> data;
+            cin.ignore();
+            getline(cin, data);
             if (data.empty()) {
                 cout << "Using default" << endl;
                 data = dataFile;
@@ -92,9 +93,9 @@ class CLI {
                 }
                 else {cout << "No suggestions found for BK-Tree" << endl;};
                 if (!resultTrie.empty()) {
-                    cout << "Trie suggestions: ";
+                    cout << "Trie suggestions: " << endl;
                     for (int i = 0; i < resultTrie.size(); i++) {
-                        cout << " " << (i + 1) << ". " << resultTrie[i].first << " rank: " << resultTrie[i].second << endl;
+                        cout << " " << (i + 1) << ". " << resultTrie[i].first << ". rank: " << resultTrie[i].second << endl;
                     }
                 }
                 else { cout << "No suggestions found for Trie" << endl;};
