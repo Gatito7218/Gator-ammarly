@@ -4,9 +4,6 @@
 #include "ui.h"
 #include "CLI.h"
 
-#include "BKTree.cpp"
-#include "interface.cpp"
-
 int main() {
     CLI app;
     app.mainLoop();
