@@ -106,6 +106,7 @@ vector<pair<string, int>> Interface::autocorrectTrie(string& wrd) {
     if (trieImplement.search(wrd)) {
         return {};
     }
+    
     vector<pair<string, int>> res = trieImplement.checkClose(wrd);
 
 
@@ -117,4 +118,12 @@ vector<pair<string, int>> Interface::autocorrectTrie(string& wrd) {
     }
 
     return res;
+}
+
+bool Interface::searchWordBKTree(string& word) {
+    return bkTreeImplement.contains(word);
+}
+
+bool Interface::searchWordTrie(string& word) {
+    return (trieImplement.search(word) > -1);
 }

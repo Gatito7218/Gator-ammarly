@@ -27,14 +27,6 @@ struct autocorResult {
     autocorResult(string& w) : originalWord(w), requiresCorrect(false) {};
 };
 
-struct trieAutocorResult {
-    string originalWord;
-    vector<string> suggestions;
-    bool requiresCorrect;
-
-    trieAutocorResult(string& w) : originalWord(w), requiresCorrect(false) {};
-};
-
 class Interface {
     private:
         BKTree bkTreeImplement;
@@ -53,6 +45,9 @@ class Interface {
     //inserting into trees
     void insertResultBKTree(string& word, int rank);
     void insertResultTrie(string& word, int rank);
+
+    bool searchWordBKTree(string& word);
+    bool searchWordTrie(string& word);
 
 
     //use regex to get words from the textfile
