@@ -33,7 +33,7 @@ class CLI {
             //by defualt we should just use the file already put in here but ill still give an option to manually type it in
             string data;
 
-            cout << "Enter the filepath: ";
+            cout << "Enter the filepath (type default to use class defined path): ";
             
             cin >> data;
             if (data == "default") {
