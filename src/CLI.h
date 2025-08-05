@@ -34,7 +34,7 @@ class CLI {
             //by defualt we should just use the file already put in here but ill still give an option to manually type it in
             string data;
 
-            cout << "Enter the filepath or 'default': ";
+            cout << "Enter the filepath: ";
             
             cin.ignore();
             getline(cin, data);
