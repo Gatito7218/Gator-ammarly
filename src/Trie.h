@@ -85,6 +85,8 @@ class Trie {
         };  
     }
 
+    ~Trie() {};
+
     void insert(const string& insertWord, int rank) {
 
         // Creates new node to iterate through to get to end of word

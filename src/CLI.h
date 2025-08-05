@@ -4,11 +4,12 @@
 #include "interface.h"
 #include <iostream>
 #include <limits>
+#include <cstdlib>
 
 class CLI {
     private:
         Interface interface;
-        string dataFile = "C:/Users/djbik/OneDrive/Desktop/Gator-ammarly/Gator-ammarly/unigram_freq.csv";
+        string dataFile = "C:/Users/GDGam/OneDrive/Desktop/files/programming/Work for c++/datastruct work/gatorammarly/Gator-ammarly/unigram_freq.csv";
         bool alrLoaded = false; //if the data is already loaded into the trees (so it doesn't do it again)
         void printHeader() {
             cout << "========================================" << endl;
@@ -33,9 +34,10 @@ class CLI {
             //by defualt we should just use the file already put in here but ill still give an option to manually type it in
             string data;
 
-            cout << "Enter the filepath: ";
+            cout << "Enter the filepath or 'default': ";
             
-            cin >> data;
+            cin.ignore();
+            getline(cin, data);
             if (data == "default") {
                 cout << "Using default" << endl;
                 data = dataFile;
@@ -53,7 +55,6 @@ class CLI {
             }
 
             cout << "Press enter to continue" << endl;
-            cin.ignore();
             cin.get();
         }
 
@@ -190,10 +191,14 @@ class CLI {
 
                     if (cleanWord.empty()) continue;
 
-                    cout << "\nMisspelled word: " << tokens[j].first << endl;
-
                     autocorResult resultBK = interface.autocorrectBKTree(cleanWord, 2); //don't want more than a distance of 2
                     vector<pair<string, int>> resultTrie = interface.autocorrectTrie(cleanWord);
+
+                    if (resultBK.suggestions.empty() && resultTrie.empty()) {
+                        continue;
+                    }
+
+                    cout << "\nMisspelled word: " << tokens[j].first << endl;
 
                     bool sugg = false;
                     if (!resultBK.suggestions.empty()) {
@@ -246,13 +251,18 @@ class CLI {
 
                             cout << "Invalid input, skipping." << endl;
                     }
+                    cout << endl;
                 }
 
                 tokenizedLines[i] = tokens;
                 cout << "\nContinue to next line? (y/n): ";
                 string answer;
                 cin >> answer;
-                if (answer != "y" && answer != "Y") break;
+                if (answer != "y" && answer != "Y") {
+                    cout << endl;
+                    break;
+                }
+                cout << endl;
             }
 
             
@@ -312,6 +322,7 @@ class CLI {
                         break;
                     case 4:
                         cout << "Bye Bye!" << endl;
+                        exit(EXIT_SUCCESS);
                         return;
                     default:
                         cout << "Invalid input, please use a number from 1-4" << endl;
