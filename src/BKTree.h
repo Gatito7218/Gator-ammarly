@@ -9,8 +9,8 @@
 
 using namespace std;
 
-//TO-DO: multiple children of the same distance, will use a vector, I don't wanna do that right now tho
-//Also I did not account for the word rank yet, just wanted to do the basic code logic of the tree
+//Each node within the tree will have an unordered_map to its children that consists of a vector to account for words with
+//the same Levenshtein distance
 struct BKNode {
     string word;
     unordered_map<int, vector<unique_ptr<BKNode>>> children;
@@ -40,7 +40,7 @@ class BKTree {
         BKTree();
         ~BKTree();
         void insert(string& w, int rank);
-        bool contains(string& w); //see if the word already exists within the list
+        bool contains(string& w); //see if the word already exists within the list; really just a modified insert
         vector<outputWord> search(string& w, int maxDist);
         int returnSize();
 };

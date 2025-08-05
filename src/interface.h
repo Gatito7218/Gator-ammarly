@@ -12,12 +12,6 @@
 
 using namespace std;
 
-//string lowercase(string& inpstr) {
-//    string outstr = inpstr;
-//    std::transform(outstr.begin(), outstr.end(), outstr.begin(), ::tolower);
-//    return outstr;
-//};
-
 //Ease of use for using the autocorrect
 struct autocorResult {
     string originalWord;
@@ -33,8 +27,6 @@ class Interface {
         Trie trieImplement;
 
     public:
-    //Create some funcion for word regex and extracting words; changing to lower case etc.
-    //Initialize the BKTree and the trie here as well and train them on the data set (will be added later)
 
     //inserting the common word data set into the trees
     //CSV file 2 columns, 1st is word, 2nd is frequency; its already sorted so disregard frequency and attach rank based on order
@@ -50,10 +42,7 @@ class Interface {
     bool searchWordTrie(string& word);
 
 
-    //use regex to get words from the textfile
-    vector<string> wordExtraction(string& text);
-
-    //TO-DO: probably better to have a function that just returns a vector of the results
+    //Core of the structure, returns the autocorrect suggestions
     autocorResult autocorrectBKTree(string& word, int maxDist);
     vector<pair<string, int>> autocorrectTrie(string& word);
     

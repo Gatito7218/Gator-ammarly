@@ -11,12 +11,6 @@
 
 using namespace std;
 
-// I would call it Node but theres already a Node and i dont wanna mix things up
-// idk how much of this im gonna do but hopefully a lot
-// - Gabriel
-
-// Considering adding a way to find distance of keys from eachother
-// to get nearby typos
 
 struct TrieNode {
 
@@ -37,7 +31,7 @@ struct TrieNode {
 
 };
 
-// Ill make the functions later they dont seem to hard to implement
+
 class Trie {
     private:
 
@@ -61,7 +55,7 @@ class Trie {
 
         return count;
     }
-
+    //implemented by David to fix a bug; Rank wasn't being properly inserted into the checkClose function
     int getRank(const string& word) {
         TrieNode* tempNode = root;
         for (char c : word) {
@@ -146,7 +140,7 @@ class Trie {
         vector<pair<string, int>> closeWords;
         unordered_set<string> seen;
         TrieNode* tempNode = root;
-
+        //Checks for issues of missplaced letters within a word
         for (int i = checkWord.length() - 1; i >= 0; i--) {
 
                 char orig = tolower(checkWord[i]);
@@ -163,15 +157,15 @@ class Trie {
                     }
                 }
             }
-        
-        sort(closeWords.begin(), closeWords.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
+        //heavy checking within search is needed or else it does. not. work.
+        sort(closeWords.begin(), closeWords.end(), [](const pair<string, int>& a, const pair<string, int>& b) { 
             if (a.second == -1 && b.second == -1) return a.first < b.first;
             if (a.second == -1) return false;
             if (b.second == -1) return true;
             return a.second < b.second;
         });
 
-        if (closeWords.size() > 5) {
+        if (closeWords.size() > 5) { //Don;t want too many suggestions
             closeWords.resize(5);
         }
 
