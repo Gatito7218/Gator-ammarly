@@ -38,6 +38,7 @@ class Trie {
     TrieNode* root;
     unordered_map<char, string> keys;
 
+    // Recursive function to get number of words in trie.
     int wordCountRec(TrieNode* node) {
         if (node == nullptr) {
             return 0;
@@ -56,8 +57,13 @@ class Trie {
         return count;
     }
     //implemented by David to fix a bug; Rank wasn't being properly inserted into the checkClose function
+    // Gets the rank of the word being checked.
     int getRank(const string& word) {
+
+        // Node for checking
         TrieNode* tempNode = root;
+
+        // Iterates to find the word in the trie.
         for (char c : word) {
             int idx = (char) tolower(c) - 'a';
             if (tempNode->alphabet[idx] == nullptr) {
@@ -65,11 +71,14 @@ class Trie {
             }
             tempNode = tempNode->alphabet[idx];
         }
+
+        // If its a word end, return its rank. otherwise, return -1.
         return tempNode->wordEnd ? tempNode->wordRank : -1;
     }
 
     public:
 
+    // Constructor
     Trie() {
 
         root = new TrieNode();
@@ -84,7 +93,7 @@ class Trie {
             {'y', "tghu"}, {'z', "asx"}
         };  
     }
-
+    
     ~Trie() {};
 
     void insert(const string& insertWord, int rank) {
@@ -139,27 +148,50 @@ class Trie {
     }
 
     vector<pair<string, int>> checkClose(const string& checkWord) {
+
+        // Vector to keep the close words to the typo.
         vector<pair<string, int>> closeWords;
+        // Set to keep the seen words.
         unordered_set<string> seen;
+        // Node to be used.
         TrieNode* tempNode = root;
-        //Checks for issues of missplaced letters within a word
+        // Checks for issues of missplaced letters within a word
+
+        // Iterates through the entire word.
         for (int i = checkWord.length() - 1; i >= 0; i--) {
 
-                char orig = tolower(checkWord[i]);
-                if (keys.find(orig) == keys.end()) continue;
+            // Makes each letter lowercase before checking.
+            char orig = tolower(checkWord[i]);
+            
+            // Continues if ket isnt in keys.
+            if (keys.find(orig) == keys.end()) continue;
 
-                for (char c : keys[orig]) {
-                    string cand = checkWord;
-                    cand[i] = c;
-                    if (seen.count(cand)) continue;
-                    seen.insert(cand);
-                    if (search(cand)) {
-                        int rank = getRank(cand);
-                        closeWords.emplace_back(cand, rank);
-                    }
+            // Iterates through all the letters around the checked letter.
+            for (char c : keys[orig]) {
+
+                // Testing word to be checked and added to closeWords.
+                string cand = checkWord;
+                // Replaces the letter at each position to the letter.
+                cand[i] = c;
+
+                // If the word has already been seen, continue.
+                if (seen.count(cand)) continue;
+
+                // If not, insert it into seen.
+                seen.insert(cand);
+
+                // Check if the word is a valid word.
+                if (search(cand)) {
+
+                    // Get rank and add to closeWords if so.
+                    int rank = getRank(cand);
+                    closeWords.emplace_back(cand, rank);
                 }
             }
-        //heavy checking within search is needed or else it does. not. work.
+        }
+
+        // Sorts the words by rank.
+        // Heavy checking within search is needed or else it does. not. work.
         sort(closeWords.begin(), closeWords.end(), [](const pair<string, int>& a, const pair<string, int>& b) { 
             if (a.second == -1 && b.second == -1) return a.first < b.first;
             if (a.second == -1) return false;
@@ -167,13 +199,15 @@ class Trie {
             return a.second < b.second;
         });
 
-        if (closeWords.size() > 5) { //Don;t want too many suggestions
+        // Reduces number of suggestions.
+        if (closeWords.size() > 5) {
             closeWords.resize(5);
         }
 
         return closeWords;
     }
 
+    // Returns the number of words in the trie.
     int returnSize() {
         return wordCountRec(root);
     }
